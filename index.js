@@ -49,9 +49,9 @@ const server = http.createServer((req, res) => {
   };
 
   //Reading the request path
-  const { query, pathname: pathName } = url.parse(req.url);
-  console.log(url.parse(req.url));
-  // Prdocut page
+  const { query, pathname: pathName } = url.parse(req.url, true);
+
+  // Overview response
   if (pathName === "/overview" || pathName === "/") {
     const htmlCards = dataObj
       .map((product) => replaceTemplate(tempCard, product))
@@ -59,21 +59,22 @@ const server = http.createServer((req, res) => {
     const htmlOverview = tempOverview.replace(`{%PRODUCT_CARDS%}`, htmlCards);
 
     res.writeHead(200, { "Content-type": "text/html" });
-
     res.end(htmlOverview);
+
+    // Prdocut response
   } else if (pathName === "/product") {
-    const product = dataObj[query.slice(3)];
+    const product = dataObj[query.id];
     const productTemplate = replaceTemplate(tempProdcut, product);
 
     res.writeHead(200, { "Content-type": "text/html" });
     res.end(productTemplate);
 
-    // API page
+    // API response
   } else if (pathName === "/api") {
     res.writeHead(200, { "Content-type": "application/json" });
     res.end(data);
 
-    // Otherwise
+    // Page not found
   } else {
     res.writeHead(404, { "Content-type": "text/html" });
     res.end(`<h1> Page not found! </h1>`);
