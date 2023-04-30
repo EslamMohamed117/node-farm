@@ -1,5 +1,6 @@
 const http = require("http");
 const fs = require("fs");
+const url = require("url");
 
 // fs.readFile(`./txt/input.txt`, "utf-8", (err, data) => {
 //   console.log(data);
@@ -39,6 +40,8 @@ const server = http.createServer((req, res) => {
     );
     finalTemplate = finalTemplate.replace(/{%QUANTITY%}/g, product.quantity);
     finalTemplate = finalTemplate.replace(/{%ID%}/g, product.id);
+    finalTemplate = finalTemplate.replace(/{%FROM%}/g, product.from);
+    finalTemplate = finalTemplate.replace(/{%NUTRIENTS%}/g, product.nutrients);
     if (!product.organic)
       finalTemplate = finalTemplate.replace(/{%NOT_ORGANIC%}/g, "not-organic");
 
@@ -46,11 +49,10 @@ const server = http.createServer((req, res) => {
   };
 
   //Reading the request path
-  const pathName = req.url;
-
+  const { query, pathname: pathName } = url.parse(req.url);
+  console.log(url.parse(req.url));
   // Prdocut page
   if (pathName === "/overview" || pathName === "/") {
-  } else if (pathName === "/product") {
     const htmlCards = dataObj
       .map((product) => replaceTemplate(tempCard, product))
       .join("");
@@ -59,6 +61,12 @@ const server = http.createServer((req, res) => {
     res.writeHead(200, { "Content-type": "text/html" });
 
     res.end(htmlOverview);
+  } else if (pathName === "/product") {
+    const product = dataObj[query.slice(3)];
+    const productTemplate = replaceTemplate(tempProdcut, product);
+
+    res.writeHead(200, { "Content-type": "text/html" });
+    res.end(productTemplate);
 
     // API page
   } else if (pathName === "/api") {
