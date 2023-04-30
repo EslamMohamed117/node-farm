@@ -12,11 +12,18 @@ const server = http.createServer((req, res) => {
 
   //Reading the request path
   const pathName = req.url;
-  if (pathName === "/product") {
+
+  // Prdocut page
+  if (pathName === "/overview" || pathName === "/") {
+  } else if (pathName === "/product") {
     res.end("Welcome to the product");
+
+    // API page
   } else if (pathName === "/api") {
     res.writeHead(200, { "Content-type": "application/json" });
     res.end(data);
+
+    // Otherwise
   } else {
     res.writeHead(404, { "Content-type": "text/html" });
     res.end(`<h1> Page not found! </h1>`);
